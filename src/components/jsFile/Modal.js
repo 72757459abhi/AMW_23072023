@@ -1,24 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import '../cssFile/Modal.css'
+import axios from "axios";
 
 const ModalComp = (props) => {
-  const initModal = () => {
-    return props.setShow(false);
-  };
+   const [desc,setDesc]=useState()
+   const [phno,setphno]=useState()
+    const onCloseFun=()=>{
+      props.setShow(false);
+    }
+    const url=process.env.REACT_APP_SERVICE_ID
+  const initModal = (e) => {
+    let payload={
+          "phno":phno,
+           "desc":desc
+    }
+    axios.post(url+"sendEmail",payload).then((res)=>{
+            console.log(res)
+    })
+    e.preventDefault()
 
+
+     props.setShow(false);
+  };
+   const onChangeFun=(e,type)=>{
+      if(type === "phno"){
+        setphno(e.target.value)
+      }else{
+        setDesc(e.target.value)
+      }
+
+   }
   return (
     <>
       {/* <Button variant="success">Open Modal</Button> */}
 
       <Modal
         show={props.show}
-        onHide={initModal}
+        onHide={onCloseFun}
         aria-labelledby="ModalHeader"
         centered
       >
-        <Modal.Header closeButton onClick={initModal}>
+        <Modal.Header closeButton onClick={onCloseFun}>
         <p1 >Connect with Aakash Metal Works</p1>
         </Modal.Header>
         <Modal.Body>
@@ -26,13 +50,16 @@ const ModalComp = (props) => {
             <label htmlFor="contactNo">
               Mobile Number<span style={{ color: "red" }}>*</span>
             </label><br />
-            <input className="mobInput" type="tel" id="contactNo" required placeholder="Enter Your Mobile No"/> <br />
+    
+            <input className="mobInput" type="tel" id="contactNo" required placeholder="Enter Your Mobile No" 
+            onChange={(e)=>onChangeFun(e,"phno")}/> <br />
             <p className="note" >We will contact you on this number</p>
-            <textarea name="message" id="message" cols="43" rows="2" placeholder='Describe your requirement in detail...'></textarea>
+            <textarea name="message" id="message" cols="43" rows="2" placeholder='Describe your requirement in detail...'
+             onChange={(e)=>onChangeFun(e,"desc")}></textarea>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" onClick={initModal}>
+          <Button variant="success" onClick={(e)=>initModal(e)}>
             Submit Now
           </Button>
         </Modal.Footer>
